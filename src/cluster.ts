@@ -122,7 +122,7 @@ export class Cluster {
       try {
         conn.close();
       } catch (error) {
-        console.error(`Error closing connection: ${error}`);
+        throw new Error(`Error closing connection: ${error}`);
       }
     }
   }
