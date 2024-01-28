@@ -60,7 +60,7 @@ export function createUploadStream(
         length: fileSizeBytes,
         chunkSize: chunkSizeBytesCombined,
         uploadDate: new Date(),
-        filename: filename,
+        filename,
         metadata: options?.metadata,
       });
     },

@@ -236,7 +236,7 @@ describe("uri", () => {
       assertEquals(options.credential?.password, "somePassword");
       assertEquals(options.retryWrites, true);
       // deno-lint-ignore no-explicit-any
-      assertEquals((options as any)["servers"], undefined);
+      assertEquals((options as any).servers, undefined);
     },
   });
 });

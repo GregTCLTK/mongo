@@ -25,7 +25,7 @@ export class ScramAuthPlugin extends AuthPlugin {
       client: driverMetadata,
       compression: authContext.options.compression,
     };
-    const request = {
+    return {
       ...handshakeDoc,
       ...{
         speculativeAuthenticate: {
@@ -38,12 +38,11 @@ export class ScramAuthPlugin extends AuthPlugin {
         },
       },
     };
-    return request;
   }
 
   auth(authContext: AuthContext): Promise<Document> {
     const response = authContext.response;
-    if (response && response.speculativeAuthenticate) {
+    if (response?.speculativeAuthenticate) {
       return continueScramConversation(
         this.cryptoMethod,
         response.speculativeAuthenticate,
@@ -133,12 +132,9 @@ export async function continueScramConversation(
   const username = cleanUsername(credentials.username!);
   const password = credentials.password!;
 
-  let processedPassword;
-  if (cryptoMethod === "sha256") {
-    processedPassword = saslprep(password);
-  } else {
-    processedPassword = await passwordDigest(username, password);
-  }
+  const processedPassword = cryptoMethod === "sha256"
+    ? saslprep(password)
+    : await passwordDigest(username, password);
 
   const payload = fixPayload(dec.decode(response.payload.buffer));
   const dict = parsePayload(payload);
@@ -216,8 +212,7 @@ export function fixPayload(payload: string) {
   const temp = payload.split("=");
   temp.shift();
   const it = parseInt(temp.pop()!, 10);
-  payload = "r=" + temp.join("=") + "=" + it;
-  return payload;
+  return `r=${temp.join("=")}=${it}`;
 }
 //this is a second hack to fix codification in payload (in being and end of payload exists a codification problem, needs investigation ...)
 export function fixPayload2(payload: string) {
@@ -226,14 +221,14 @@ export function fixPayload2(payload: string) {
   payload = temp.join("v=");
   temp = payload.split("ok");
   temp.pop();
-  return "v=" + temp.join("ok");
+  return `v=${temp.join("ok")}`;
 }
 
 export function parsePayload(payload: string) {
   const dict: Document = {};
   const parts = payload.split(",");
-  for (let i = 0; i < parts.length; i++) {
-    const valueParts = parts[i].split("=");
+  for (const part of parts) {
+    const valueParts = part.split("=");
     dict[valueParts[0]] = valueParts[1];
   }
 
@@ -271,7 +266,7 @@ export function xor(_a: ArrayBuffer, _b: ArrayBuffer) {
   const length = Math.max(a.length, b.length);
   const res = new Uint8Array(length);
 
-  for (let i = 0; i < length; i += 1) {
+  for (let i = 0; i < length; i++) {
     res[i] = a[i] ^ b[i];
   }
 
@@ -301,13 +296,11 @@ export async function HMAC(
     ["sign", "verify"],
   );
 
-  const signature = await crypto.subtle.sign(
+  return await crypto.subtle.sign(
     "HMAC",
     key,
     enc.encode(text),
   );
-
-  return signature;
 }
 
 interface HICache {
@@ -355,7 +348,7 @@ export async function HI(
   }
 
   _hiCache[key] = saltedData;
-  _hiCacheCount += 1;
+  _hiCacheCount++;
   return saltedData;
 }
 

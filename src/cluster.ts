@@ -91,12 +91,14 @@ export class Cluster {
   }
 
   async updateMaster() {
-    const results = await Promise.all(this.#protocols.map((protocol) => {
-      return protocol.commandSingle(
-        "admin",
-        { isMaster: 1 },
-      );
-    }));
+    const results = await Promise.all(
+      this.#protocols.map((protocol) =>
+        protocol.commandSingle(
+          "admin",
+          { isMaster: 1 },
+        )
+      ),
+    );
     const masterIndex = results.findIndex((result) =>
       result.isWritablePrimary || result.ismaster
     );

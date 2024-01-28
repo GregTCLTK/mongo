@@ -98,11 +98,7 @@ export class Collection<T extends Document> {
       ...options,
     });
     const { n, ok } = res;
-    if (ok === 1) {
-      return n;
-    } else {
-      return 0;
-    }
+    return ok === 1 ? n : 0;
   }
 
   async countDocuments(
@@ -299,7 +295,7 @@ export class Collection<T extends Document> {
   }
 
   async drop(options?: DropOptions): Promise<void> {
-    const _res = await this.#protocol.commandSingle(this.#dbName, {
+    await this.#protocol.commandSingle(this.#dbName, {
       drop: this.name,
       ...options,
     });
@@ -329,7 +325,7 @@ export class Collection<T extends Document> {
   }
 
   async createIndexes(options: CreateIndexOptions) {
-    const res = await this.#protocol.commandSingle<{
+    return await this.#protocol.commandSingle<{
       ok: number;
       createdCollectionAutomatically: boolean;
       numIndexesBefore: number;
@@ -338,11 +334,10 @@ export class Collection<T extends Document> {
       createIndexes: this.name,
       ...options,
     });
-    return res;
   }
 
   async dropIndexes(options: DropIndexOptions) {
-    const res = await this.#protocol.commandSingle<{
+    return await this.#protocol.commandSingle<{
       ok: number;
       nIndexesWas: number;
     }>(
@@ -352,8 +347,6 @@ export class Collection<T extends Document> {
         ...options,
       },
     );
-
-    return res;
   }
 
   listIndexes() {

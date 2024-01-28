@@ -146,7 +146,7 @@ export class Pager {
   get(i: number, noAllocate?: boolean): Page {
     const arr: Page[] = this._array(i, !!noAllocate);
     const first: number = this.path[0];
-    let page: undefined | Page = arr && arr[first];
+    let page: undefined | Page = arr?.[first];
     if (!page && !noAllocate) {
       page = arr[first] = new Page(i, new Uint8Array(this.pageSize));
       if (i >= this.length) {
@@ -204,7 +204,7 @@ export class Pager {
       const arr: Page[] = this._array(ptr, true);
 
       for (let i = 0; i < 32768 && ptr < list.length; i++) {
-        list[ptr++] = arr && arr[i] ? arr[i].buffer : empty;
+        list[ptr++] = arr?.[i] ? arr[i].buffer : empty;
       }
     }
 

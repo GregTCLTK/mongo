@@ -19,16 +19,14 @@ async function ensureIndex<T extends Document>(
     return currentKeys.length === keys.length &&
       currentKeys.every((k) => keys.includes(k));
   });
-  if (existing === undefined) {
-    return collection.createIndexes({ indexes: [index] });
-  } else {
-    return {
+  return existing === undefined
+    ? collection.createIndexes({ indexes: [index] })
+    : {
       ok: 1,
       createdCollectionAutomatically: false,
       numIndexesBefore: indexes.length,
       numIndexesAfter: indexes.length,
     };
-  }
 }
 
 const fileIndexSpec = {

@@ -69,7 +69,7 @@ export class Srv {
       `_mongodb._tcp.${url}`,
       "SRV",
     );
-    if (!(srvRecord?.length > 0)) {
+    if (srvRecord?.length <= 0) {
       throw new SRVError(
         `Expected at least one SRV record, received ${srvRecord?.length} for url ${url}`,
       );
@@ -81,12 +81,10 @@ export class Srv {
       );
     }
 
-    const servers = srvRecord.map((record) => {
-      return {
-        host: record.target,
-        port: record.port,
-      };
-    });
+    const servers = srvRecord.map((record) => ({
+      host: record.target,
+      port: record.port,
+    }));
 
     const optionsUri = txtRecords[0].join("");
     const options: { valid: SRVResolveResultOptions; illegal: string[] } = {

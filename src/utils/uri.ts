@@ -60,11 +60,11 @@ export function parse_url(url: string): Parts {
         ? decodeURIComponent(matches![l + 1])
         : matches![l + 1];
     }
-    parts["servers"] = [
-      { host: parts["hostname"], port: parseInt(parts["port"]) },
+    parts.servers = [
+      { host: parts.hostname, port: parseInt(parts.port) },
     ];
-    delete parts["hostname"];
-    delete parts["port"];
+    delete parts.hostname;
+    delete parts.port;
     parts.path = parts.search
       ? (parts.pathname ? parts.pathname + parts.search : parts.search)
       : parts.pathname;
@@ -94,7 +94,7 @@ export function parse_url(url: string): Parts {
     // deno-lint-ignore no-explicit-any
     const obj: any = {};
     const params = decodeURI(qs || "").replace(
-      new RegExp("\\" + identifier),
+      new RegExp(`\\${identifier}`),
       "",
     ).split(/&amp;|&/);
 
@@ -161,11 +161,7 @@ export function parseSrvUrl(url: string): SrvConnectOptions {
   if (data.search.ssl) {
     connectOptions.tls = data.search.ssl === "true";
   }
-  if (data.search.tls) {
-    connectOptions.tls = data.search.tls === "true";
-  } else {
-    connectOptions.tls = true;
-  }
+  connectOptions.tls = data.search.tls ? data.search.tls === "true" : true;
   if (data.search.tlsCAFile) {
     connectOptions.certFile = data.search.tlsCAFile;
   }

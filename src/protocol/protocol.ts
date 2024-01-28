@@ -36,7 +36,7 @@ export class WireProtocol {
   }
 
   async connect() {
-    const { connectionId: _connectionId } = await handshake(this);
+    await handshake(this);
   }
 
   async commandSingle<T = Document>(

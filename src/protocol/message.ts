@@ -37,31 +37,30 @@ function serializeSections(
       section0.set(document, 1);
       totalLen += section0.byteLength;
       return section0;
-    } else {
-      const identifier = encoder.encode(section.identifier + "\0");
-      let documentsLength = 0;
-      const docs = section.documents.map((doc) => {
-        const document = serialize(doc);
-        documentsLength += document.byteLength;
-        return document;
-      });
-      const section1 = new Uint8Array(
-        1 + 4 + identifier.byteLength + documentsLength,
-      );
-      const view = new DataView(section1.buffer);
-
-      view.setUint8(0, 1);
-      view.setUint32(1, section1.byteLength - 1, true);
-      let pos = 4;
-
-      for (const doc of docs) {
-        section1.set(doc, pos);
-        pos += doc.byteLength;
-      }
-
-      totalLen += section1.byteLength;
-      return section1;
     }
+    const identifier = encoder.encode(`${section.identifier}\0`);
+    let documentsLength = 0;
+    const docs = section.documents.map((doc) => {
+      const document = serialize(doc);
+      documentsLength += document.byteLength;
+      return document;
+    });
+    const section1 = new Uint8Array(
+      1 + 4 + identifier.byteLength + documentsLength,
+    );
+    const view = new DataView(section1.buffer);
+
+    view.setUint8(0, 1);
+    view.setUint32(1, section1.byteLength - 1, true);
+    let pos = 4;
+
+    for (const doc of docs) {
+      section1.set(doc, pos);
+      pos += doc.byteLength;
+    }
+
+    totalLen += section1.byteLength;
+    return section1;
   });
 
   return { length: totalLen, sections: buffers };
@@ -130,7 +129,7 @@ export function deserializeMessage(
       pos += len;
       sections.push({ identifier, documents });
     } else {
-      throw new Error("Invalid section kind: " + kind);
+      throw new Error(`Invalid section kind: ${kind}`);
     }
   }
 

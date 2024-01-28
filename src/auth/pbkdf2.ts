@@ -31,8 +31,8 @@ export async function pbkdf2(
   return crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
-      salt: salt,
-      iterations: iterations,
+      salt,
+      iterations,
       hash: {
         name: algo,
       },

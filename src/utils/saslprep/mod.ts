@@ -57,7 +57,7 @@ function toCodePoints(input: string): number[] {
   const codepoints = [];
   const size = input.length;
 
-  for (let i = 0; i < size; i += 1) {
+  for (let i = 0; i < size; i++) {
     const before: number = input.charCodeAt(i);
 
     if (before >= 0xd800 && before <= 0xdbff && size > i + 1) {
@@ -65,7 +65,7 @@ function toCodePoints(input: string): number[] {
 
       if (next >= 0xdc00 && next <= 0xdfff) {
         codepoints.push((before - 0xd800) * 0x400 + next - 0xdc00 + 0x10000);
-        i += 1;
+        i++;
         continue;
       }
     }

@@ -15,13 +15,12 @@ export class X509AuthPlugin extends AuthPlugin {
     super();
   }
   prepare(authContext: AuthContext): Document {
-    const handshakeDoc = <HandshakeDocument> {
+    return <HandshakeDocument> {
       ismaster: true,
       client: driverMetadata,
       compression: authContext.options.compression,
       speculativeAuthenticate: x509AuthenticateCommand(authContext.credentials),
     };
-    return handshakeDoc;
   }
 
   auth(authContext: AuthContext): Promise<Document> {
